@@ -78,14 +78,27 @@ final class SwiftCMSSignerTests: XCTestCase {
         """
 
         let signer = SwiftCMSSigner()
-        let base64CMS = signer.createCMSSignedMessageBase64(
+        let base64CMSDetached = signer.createCMSSignedMessageBase64(
             inputData: messageData,
             certPEM: testCertificatePEM,
-            keyPEM: testPrivateKeyPEM
+            keyPEM: testPrivateKeyPEM,
+			detached: true
         )
 
-        XCTAssertNotNil(base64CMS, "CMS signed message should not be nil")
-        XCTAssertFalse(base64CMS!.isEmpty, "CMS signed message should not be empty")
-        print("CMS Base64 Output: \(base64CMS!)")
-    }
+        XCTAssertNotNil(base64CMSDetached, "CMS signed message should not be nil")
+        XCTAssertFalse(base64CMSDetached!.isEmpty, "CMS signed message should not be empty")
+        print("CMS Base64 Output (detached): \(base64CMSDetached!)")
+
+		let base64CMSAttached = signer.createCMSSignedMessageBase64(
+			inputData: messageData,
+			certPEM: testCertificatePEM,
+			keyPEM: testPrivateKeyPEM,
+			detached: false
+		)
+
+		XCTAssertNotNil(base64CMSAttached, "CMS signed message should not be nil")
+		XCTAssertFalse(base64CMSAttached!.isEmpty, "CMS signed message should not be empty")
+		XCTAssertNotEqual(base64CMSAttached, base64CMSDetached)
+		print("CMS Base64 Output (attached): \(base64CMSAttached!)")
+}
 }
